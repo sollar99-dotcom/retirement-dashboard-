@@ -412,6 +412,23 @@
     </div>
   </div>`;
   // ── 실시간 시세 연동 ──
+  // Cloudflare Pages 여부 감지
+  const isCloudflare = location.hostname.endsWith('.pages.dev');
+
+  async function fetchYahooDirect(ticker) {
+    const PROXY = 'https://corsproxy.io/?url=';
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
+    const res = await fetch(PROXY + encodeURIComponent(url));
+    const data = await res.json();
+    const meta = data.chart.result[0].meta;
+    return {
+      price: meta.regularMarketPrice,
+      prevClose: meta.chartPreviousClose,
+      change: meta.regularMarketPrice - meta.chartPreviousClose,
+      changePct: ((meta.regularMarketPrice - meta.chartPreviousClose) / meta.chartPreviousClose) * 100,
+    };
+  }
+
   window.fetchLivePrices = async function () {
     const dot   = document.getElementById('live-dot');
     const label = document.getElementById('live-label');
@@ -419,10 +436,24 @@
     label.textContent = '불러오는 중...';
 
     try {
-      const res = await fetch('/api/prices');
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const prices = await res.json();
-      if (prices.error) throw new Error(prices.error);
+      let prices;
+
+      if (isCloudflare) {
+        // Cloudflare Worker 백엔드 사용
+        const res = await fetch('/api/prices');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        prices = await res.json();
+        if (prices.error) throw new Error(prices.error);
+      } else {
+        // GitHub Pages — Yahoo Finance 직접 호출 (CORS 프록시)
+        const tickers = ['JEPQ', 'O', 'SCHD', 'NVDY', 'USDKRW=X'];
+        const results = await Promise.all(tickers.map(t => fetchYahooDirect(t)));
+        prices = {};
+        tickers.forEach((t, i) => {
+          const key = t === 'USDKRW=X' ? 'USDKRW' : t;
+          prices[key] = results[i];
+        });
+      }
 
       const usdkrw = prices.USDKRW?.price ?? 1380;
       document.getElementById('fx-label').textContent = `환율 ₩${usdkrw.toFixed(0)}`;
@@ -469,7 +500,7 @@
     }
   };
 
-  // 배포 환경에서만 자동 실행 (file:// 은 /api/prices 없음)
+  // 배포 환경에서만 자동 실행
   if (location.protocol !== 'file:') {
     fetchLivePrices();
   } else {
