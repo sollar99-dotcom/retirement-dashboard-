@@ -235,13 +235,116 @@
   </main>
 
   <script>
-  (function () {
+  (async function () {
     const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');
     const fmtW = n => n.toLocaleString('ko-KR') + '원';
     const fmtM = n => (n >= 1e8 ? (n/1e8).toFixed(1)+'억' : (n >= 1e4 ? Math.round(n/1e4)+'만' : n.toLocaleString()) ) + '원';
     const fmtP = (n, fix=1) => (n>=0?'+':'') + n.toFixed(fix) + '%';
     
     const DATA = JSON.parse(document.getElementById('portfolio-data').textContent);
+    const GOOGLE_SHEET_ID = '16E_6wAUY7GJFFop8B5dqECD7HyaieOSPYQE3qCVmNx0';
+    const GOOGLE_SHEET_GID = '0';
+
+    function parseNumericValue(value) {
+      if (value === null || value === undefined) return null;
+      if (typeof value === 'number') return value;
+      const normalized = String(value).replace(/[\s,\u20A9]/g, '').replace(/[^0-9.\-]/g, '');
+      return normalized === '' ? null : Number(normalized);
+    }
+
+    function normalizeLabel(value) {
+      return String(value || '').trim().replace(/\s+/g, '').replace(/[()]/g, '').toLowerCase();
+    }
+
+    async function fetchGoogleSheetTable() {
+      const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&gid=${GOOGLE_SHEET_GID}`;
+      let text;
+      try {
+        const res = await fetch(url);
+        text = await res.text();
+      } catch (err) {
+        const proxy = 'https://corsproxy.io/?url=';
+        const res = await fetch(proxy + encodeURIComponent(url));
+        text = await res.text();
+      }
+      text = text.replace(/^\/\*O_o\*\/\s*google\.visualization\.Query\.setResponse\(/, '').replace(/\);\s*$/, '');
+      return JSON.parse(text).table;
+    }
+
+    function buildSheetRows(table) {
+      return table.rows.map(row => row.c.map(cell => cell || null));
+    }
+
+    function findRowByLabel(rows, labelFragment) {
+      return rows.find(row => normalizeLabel(row[1]?.v).includes(normalizeLabel(labelFragment)));
+    }
+
+    function getCellValue(row, colIndex) {
+      return row?.[colIndex] ? parseNumericValue(row[colIndex].v) : null;
+    }
+
+    async function loadGoogleSheetData() {
+      try {
+        const table = await fetchGoogleSheetTable();
+        const rows = buildSheetRows(table);
+        const ageRow = findRowByLabel(rows, '나이');
+        const yearRow = findRowByLabel(rows, '연도');
+        const totalRow = findRowByLabel(rows, '합계');
+
+        if (ageRow && yearRow && totalRow) {
+          const ages = ageRow.slice(2, 8).map(cell => parseNumericValue(cell?.v));
+          const years = yearRow.slice(2, 8).map(cell => parseNumericValue(cell?.v));
+          const totals = totalRow.slice(2, 8).map(cell => parseNumericValue(cell?.v));
+
+          const sourceDefinitions = [
+            { key: 'IRP배당', label: 'IRP배당 51만' },
+            { key: '배당주식', label: '배당주식 150만' },
+            { key: '퇴직연금배당지급', label: '퇴직연금 125만' },
+            { key: 'RI연금1', label: 'RI연금1 30만' },
+            { key: 'RI연금2', label: 'RI연금2 30만' },
+            { key: '국민연금65세', label: '국민연금 100만' },
+          ];
+
+          const sourceRows = sourceDefinitions.map(def => ({
+            ...def,
+            row: findRowByLabel(rows, def.key)
+          })).filter(item => item.row);
+
+          DATA.retirePlan = ages.map((age, index) => {
+            if (age == null) return null;
+            const year = years[index] || (age === 65 ? 2046 : 2025 + age - 30);
+            const sources = sourceRows.filter(sr => getCellValue(sr.row, 2 + index) !== null && getCellValue(sr.row, 2 + index) !== 0).map(sr => sr.label);
+            return { age, year, monthly: totals[index] || 0, sources };
+          }).filter(Boolean);
+        }
+
+        const dividendRow = findRowByLabel(rows, '배당주식');
+        if (dividendRow) {
+          const monthly = getCellValue(dividendRow, 2);
+          if (monthly !== null) {
+            DATA.summary.monthlyDividend = monthly;
+          }
+        }
+
+        const irpRow = findRowByLabel(rows, 'IRP증권');
+        const pensionRow = findRowByLabel(rows, '연금저축증권');
+        const irpValue = getCellValue(irpRow, 2);
+        const pensionValue = getCellValue(pensionRow, 2);
+        if (irpValue !== null || pensionValue !== null) {
+          DATA.summary.irpTotal = (irpValue || 0) + (pensionValue || 0);
+        }
+
+        const retirementRow = findRowByLabel(rows, '적립비율적용금액');
+        const retirementValue = getCellValue(retirementRow, 2);
+        if (retirementValue !== null) {
+          DATA.summary.retirementFund = retirementValue;
+        }
+      } catch (err) {
+        console.warn('Google Sheet load failed:', err);
+      }
+    }
+
+    await loadGoogleSheetData();
     const S = DATA.summary;
 
     // 원본 배당금 데이터 보존
