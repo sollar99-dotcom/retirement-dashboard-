@@ -78,18 +78,6 @@ header h1 em{font-style:normal;color:var(--gold)}
 .goal-pct{font-family:var(--mono);color:var(--gold)}
 .goal.done .goal-pct{color:var(--ok)}
 
-/* ── 은퇴 소득 플랜 ── */
-.plan-wrap{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;align-items:end;height:170px;margin:26px 0 6px}
-.plan-col{display:flex;flex-direction:column-reverse;gap:2px;height:100%;justify-content:flex-start;position:relative}
-.plan-col .seg{border-radius:3px;min-height:3px}
-.plan-col .top{position:absolute;top:-20px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:10px;color:var(--ink2);white-space:nowrap}
-.plan-lb{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;text-align:center;margin-top:6px}
-.plan-lb .age{font-family:var(--mono);font-size:12px;font-weight:600}
-.plan-lb .yr{font-family:var(--mono);font-size:10px;color:var(--mut)}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px}
-.legend span{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--ink2)}
-.legend i{width:9px;height:9px;border-radius:3px;flex-shrink:0}
-
 /* ── 계좌별 자산 ── */
 .acct{margin-bottom:10px}
 .acct:last-child{margin-bottom:0}
@@ -98,21 +86,39 @@ header h1 em{font-style:normal;color:var(--gold)}
 .acct .bar{height:10px}
 .acct .bar i{background:var(--s1);border-radius:99px 3px 3px 99px}
 
-/* ── 보유종목 ── */
-.grp{margin-bottom:6px}
-.grp-head{display:flex;justify-content:space-between;align-items:baseline;padding:10px 2px 6px;border-bottom:1px solid var(--line);margin-bottom:2px}
+/* ── 은퇴 진행 바 (히어로) ── */
+.ret-prog{margin-top:14px;position:relative;z-index:1}
+.rp-head{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;color:var(--ink2);margin-bottom:5px}
+.rp-head b{font-family:var(--mono);font-size:14px;color:var(--gold)}
+
+/* ── 보유종목 카드 ── */
+.grp{margin-bottom:10px}
+.grp-head{display:flex;justify-content:space-between;align-items:baseline;padding:8px 2px 8px;margin-bottom:8px;border-bottom:1px solid var(--line)}
 .grp-head b{font-size:13px;font-weight:600}
 .grp-head .num{font-size:11px;color:var(--ink2)}
-.h-row{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid rgba(255,255,255,.05)}
-.h-row:last-child{border-bottom:none}
-.h-name{flex:1;min-width:0}
-.h-name b{font-size:13px;font-weight:500;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.h-name small{font-family:var(--mono);font-size:10px;color:var(--mut)}
-.h-val{text-align:right;flex-shrink:0}
-.h-val .v{font-family:var(--mono);font-size:13px;font-weight:600}
-.h-val .c{font-family:var(--mono);font-size:11px}
+.h-card{background:var(--surface2);border:1px solid var(--hairline);border-radius:12px;padding:11px 13px;margin-bottom:8px}
+.h-top{display:flex;align-items:baseline;gap:8px;margin-bottom:9px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06)}
+.h-top .tk{font-family:var(--mono);font-size:14px;font-weight:600;flex-shrink:0}
+.h-top .nm{font-size:11px;color:var(--mut);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h-top .qty{font-family:var(--mono);font-size:12px;color:var(--ink2);flex-shrink:0}
+.h-top .qty small{color:var(--mut);font-family:var(--sans);font-size:10px}
+.h-body{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:12px}
+@media(max-width:380px){.h-body{grid-template-columns:1fr}}
+.kv{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
+.kv .k{color:var(--mut);font-size:11px;flex-shrink:0}
+.kv .v{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stale{opacity:.55}
-.badge-est{font-size:9px;color:var(--mut);border:1px solid var(--line);border-radius:4px;padding:0 4px;vertical-align:2px}
+.badge-est{font-size:9px;color:var(--mut);border:1px solid var(--line);border-radius:4px;padding:0 4px;margin-left:4px}
+
+/* ── 보유종목 그리드 (Finviz 스타일: 일간 등락 다이버징 색) ── */
+.htoggle{display:inline-flex;border:1px solid var(--hairline);border-radius:8px;overflow:hidden;letter-spacing:0;vertical-align:middle;margin-left:8px}
+.htoggle button{background:none;border:0;color:var(--mut);font-family:var(--sans);font-size:10px;padding:3px 10px;cursor:pointer}
+.htoggle button.on{background:var(--surface2);color:var(--ink)}
+.tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:6px}
+.tile{border:1px solid var(--hairline);border-radius:10px;padding:9px 10px;min-width:0;background:var(--surface2)}
+.tile .tk{font-family:var(--mono);font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .chg{font-family:var(--mono);font-size:11px;margin-top:3px;white-space:nowrap}
+.tile .val{font-family:var(--mono);font-size:10px;color:var(--ink2);margin-top:1px;white-space:nowrap}
 
 /* ── 배당 ── */
 .div-note{font-size:11px;color:var(--mut);margin-top:10px;line-height:1.7}
@@ -121,7 +127,6 @@ footer a{color:var(--ink2)}
 #status-line{font-family:var(--mono);font-size:10px;color:var(--mut);text-align:center;margin-top:6px;word-break:break-all}
 @media(max-width:420px){
   .hero-grid{grid-template-columns:repeat(3,1fr)}
-  .plan-wrap{height:140px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -136,13 +141,6 @@ footer a{color:var(--ink2)}
   </button>
 </header>
 
-<section id="hero">
-  <div class="hero-label">총 투자자산 (5개 계좌 실시간)</div>
-  <div class="hero-value num" id="total">—</div>
-  <div class="hero-sub" id="total-sub">구글시트 데이터를 불러오는 중…</div>
-  <div class="hero-grid" id="hero-grid"></div>
-</section>
-
 <section>
   <h2>매크로 핵심지표 <span class="mut" style="text-transform:none;letter-spacing:0">— 모닝 브리핑 연동</span></h2>
   <div class="macro-grid" id="macro-grid"><div class="mcell"><div class="lb">불러오는 중…</div></div></div>
@@ -154,21 +152,28 @@ footer a{color:var(--ink2)}
 </section>
 
 <section>
-  <h2>은퇴 소득 플랜 — 나이별 월수입</h2>
-  <div class="plan-wrap" id="plan"></div>
-  <div class="plan-lb" id="plan-lb"></div>
-  <div class="legend" id="plan-legend"></div>
-</section>
-
-<section>
   <h2>계좌별 자산</h2>
   <div id="accts"></div>
 </section>
 
 <section>
-  <h2>보유종목</h2>
+  <h2>보유종목
+    <span class="htoggle"><button id="hv-grid" onclick="setHView('grid')">그리드</button><button id="hv-card" onclick="setHView('card')">카드</button></span>
+  </h2>
+  <div class="tile-grid" id="holdings-grid"></div>
   <div id="holdings"></div>
   <div class="div-note" id="fx-note"></div>
+</section>
+
+<section id="hero">
+  <div class="hero-label">총 투자자산 (5개 계좌 실시간)</div>
+  <div class="hero-value num" id="total">—</div>
+  <div class="hero-sub" id="total-sub">구글시트 데이터를 불러오는 중…</div>
+  <div class="hero-grid" id="hero-grid"></div>
+  <div class="ret-prog">
+    <div class="rp-head"><span>은퇴까지 <b id="rp-days">—</b>일</span><span class="num" id="rp-pct"></span></div>
+    <div class="bar"><i id="rp-fill" style="width:0%"></i></div>
+  </div>
 </section>
 
 <footer>
@@ -187,9 +192,7 @@ const PROXIES = [
   u => 'https://corsproxy.io/?url=' + encodeURIComponent(u),
 ];
 const RETIRE_DATE = new Date(2028, 4, 1);          // 2028-05 1차 작은은퇴
-const AGE_ANCHOR = { age: 48, year: 2028 };        // 나이→연도 환산 기준
 const QUOTE_TTL = 10 * 60 * 1000;                  // 시세 캐시 10분
-const PLAN_COLORS = { '배당주식':'var(--s1)','ISA계좌':'var(--s2)','퇴직연금':'var(--s3)','RI연금1':'var(--s4)','RI연금2':'var(--s5)','국민연금':'var(--s6)' };
 /* 모닝 브리핑(fetch_data.py)과 동일한 매크로 지표 세트 */
 const MACROS = [
   { sym:'^KS11',   name:'코스피',            fmt:v=>v.toLocaleString('ko-KR',{maximumFractionDigits:2}) },
@@ -254,9 +257,16 @@ function mapCols(header) {
     sec:  find('구분','섹션'),   key:  find('티커','키'),
     name: find('이름'),          acct: find('계좌'),
     mkt:  find('시장'),          qty:  find('수량'),
-    amt:  find('금액'),          yld:  find('배당'),
-    memo: find('메모'),
+    amt:  find('금액'),          yld:  find('배당수익률', '배당률'),
+    divm: find('배당월'),        memo: find('메모'),
   };
+}
+/* "월" → 매달, "3,6,9,12" → 해당 월만. 비면 null(연배당/12 균등) */
+function parseDivMonths(s) {
+  if (!s) return null;
+  if (/월배당|^월$/.test(s)) return [1,2,3,4,5,6,7,8,9,10,11,12];
+  const m = s.split(/[,\s]+/).map(Number).filter(n => n >= 1 && n <= 12);
+  return m.length ? m : null;
 }
 
 /* ══════════ 시트 → 모델 ══════════ */
@@ -270,7 +280,8 @@ function buildModel(rows) {
     const mkt = cell(r, c.mkt).toUpperCase(), qty = num(cell(r, c.qty)), amt = num(cell(r, c.amt));
     const yld = num(cell(r, c.yld)), memo = cell(r, c.memo);
     if (sec === '보유종목') {
-      M.holdings.push({ key, name, acct, mkt, qty: qty ?? 0, avg: amt ?? 0, yld, memo });
+      M.holdings.push({ key, name, acct, mkt, qty: qty ?? 0, avg: amt ?? 0, yld,
+                        divMonths: parseDivMonths(cell(r, c.divm)), memo });
     } else if (sec === '현금') {
       M.cash.push({ name, acct, mkt, usd: mkt === 'US' ? (qty ?? 0) : 0, krw: mkt === 'US' ? 0 : (amt ?? 0) });
     } else if (sec === '계좌스냅샷') {
@@ -293,7 +304,8 @@ function yahooSymbols(h) {
     const code = String(h.key).replace(/\D/g,'').padStart(6,'0');
     return code.length === 6 && num(h.key) != null ? [code + '.KS', code + '.KQ'] : [];
   }
-  return /^[A-Z.\-=]{1,10}$/.test(h.key) ? [h.key] : [];
+  const t = String(h.key).trim().toUpperCase();   // 소문자 입력 허용
+  return /^[A-Z.\-=]{1,10}$/.test(t) ? [t] : [];
 }
 const _inflight = {};
 function getQuote(sym) {                    // 동시 중복 요청 합치기
@@ -375,9 +387,15 @@ async function loadMacros() {
 }
 
 /* ══════════ 렌더 ══════════ */
+const CAREER_START = new Date(2004, 6, 1);   // 입사 2004-07 → 2028-05 여정 기준
 function renderDday() {
-  const d = Math.ceil((RETIRE_DATE - new Date()) / 864e5);
+  const now = new Date();
+  const d = Math.ceil((RETIRE_DATE - now) / 864e5);
   $('dday').textContent = `1차 작은은퇴 D-${d}`;
+  $('rp-days').textContent = d.toLocaleString();
+  const pct = Math.min((now - CAREER_START) / (RETIRE_DATE - CAREER_START) * 100, 100);
+  $('rp-pct').textContent = pct.toFixed(1) + '% 진행';
+  $('rp-fill').style.width = pct + '%';
 }
 
 function render(M, quotes, fx) {
@@ -434,26 +452,6 @@ function render(M, quotes, fx) {
       <div class="bar"><i style="width:${pct}%"></i></div></div>`;
   }).join('');
 
-  /* 은퇴 소득 플랜 */
-  const ages = Object.keys(M.plan).map(Number).sort((a, b) => a - b);
-  const maxMonthly = Math.max(...ages.map(a => M.plan[a].reduce((s, p) => s + p.amount, 0)), 1);
-  const srcOrder = Object.keys(PLAN_COLORS);
-  $('plan').style.gridTemplateColumns = `repeat(${ages.length},1fr)`;
-  $('plan-lb').style.gridTemplateColumns = `repeat(${ages.length},1fr)`;
-  $('plan').innerHTML = ages.map(a => {
-    const items = [...M.plan[a]].sort((x, y) => srcOrder.indexOf(x.source) - srcOrder.indexOf(y.source));
-    const sum = items.reduce((s, p) => s + p.amount, 0);
-    return `<div class="plan-col" title="${a}세 합계 ${fmtW(sum)}">
-      <span class="top">${Math.round(sum/1e4)}만</span>
-      ${items.map(p => `<div class="seg" style="height:${p.amount/maxMonthly*100}%;background:${PLAN_COLORS[p.source] || 'var(--mut)'}" title="${esc(p.source)} ${fmtW(p.amount)}"></div>`).join('')}
-    </div>`;
-  }).join('');
-  $('plan-lb').innerHTML = ages.map(a =>
-    `<div><div class="age">${a}세</div><div class="yr">${AGE_ANCHOR.year + (a - AGE_ANCHOR.age)}</div></div>`).join('');
-  const usedSrc = new Set(ages.flatMap(a => M.plan[a].map(p => p.source)));
-  $('plan-legend').innerHTML = srcOrder.filter(s => usedSrc.has(s))
-    .map(s => `<span><i style="background:${PLAN_COLORS[s]}"></i>${s}</span>`).join('');
-
   /* 계좌별 자산 바 */
   const acctList = Object.entries(byAcct).sort((a, b) => b[1] - a[1]);
   const maxAcct = acctList[0]?.[1] || 1;
@@ -461,7 +459,22 @@ function render(M, quotes, fx) {
     `<div class="acct"><div class="acct-head"><b>${esc(nm)}</b><span class="num">${fmtM(v)} · ${(v/total*100).toFixed(1)}%</span></div>
      <div class="bar"><i style="width:${v/maxAcct*100}%"></i></div></div>`).join('');
 
-  /* 보유종목 (계좌별 그룹, 평가액순) */
+  /* 보유종목 그리드 (평가액순, 일간 등락률로 다이버징 색: 상승 빨강/하락 파랑, 시세없음 회색) */
+  $('holdings-grid').innerHTML = [...M.holdings].sort((a, b) => b.value - a.value).map(h => {
+    const pnlH = h.value - h.cost, pctH = h.cost ? pnlH / h.cost * 100 : 0;
+    let bg = 'var(--surface2)', chg = '<span class="mut">—</span>';
+    if (h.chgPct != null) {
+      const t = Math.min(Math.abs(h.chgPct) / 3, 1), a = (0.10 + 0.45 * t).toFixed(2);
+      bg = h.chgPct >= 0 ? `rgba(230,103,103,${a})` : `rgba(57,135,229,${a})`;
+      chg = (h.chgPct >= 0 ? '▲ ' : '▼ ') + Math.abs(h.chgPct).toFixed(2) + '%';
+    }
+    return `<div class="tile ${h.est ? 'stale' : ''}" style="background:${bg}" title="${esc(h.name)} · ${esc(h.acct)} · ${fmtW(h.value)} · 수익률 ${pctH >= 0 ? '+' : ''}${pctH.toFixed(1)}%">
+      <div class="tk">${esc(h.key || h.name)}</div>
+      <div class="chg">${chg}</div>
+      <div class="val">${fmtM(h.value)}</div></div>`;
+  }).join('');
+
+  /* 보유종목 (계좌별 그룹, 더리치 스타일 카드) */
   const grpOrder = acctList.map(([nm]) => nm);
   $('holdings').innerHTML = grpOrder.map(acct => {
     const hs = M.holdings.filter(h => h.acct === acct).sort((a, b) => b.value - a.value);
@@ -471,16 +484,24 @@ function render(M, quotes, fx) {
       ${hs.map(h => {
         const pnlH = h.value - h.cost, pctH = h.cost ? pnlH / h.cost * 100 : 0;
         const cls = pnlH >= 0 ? 'up' : 'dn', sign = pnlH >= 0 ? '+' : '';
-        const chg = h.chgPct == null ? '' : ` · 오늘 ${h.chgPct >= 0 ? '+' : ''}${h.chgPct.toFixed(2)}%`;
-        return `<div class="h-row ${h.est ? 'stale' : ''}">
-          <div class="h-name"><b>${esc(h.name)}${h.est ? ' <span class="badge-est">시세없음·평단기준</span>' : ''}</b>
-            <small>${esc(h.key || '—')} · ${h.qty}주</small></div>
-          <div class="h-val"><div class="v">${fmtW(h.value)}</div>
-            <div class="c ${cls}">${sign}${pctH.toFixed(1)}%${chg}</div></div></div>`;
+        const chg = h.chgPct == null ? '' :
+          ` <span class="${h.chgPct >= 0 ? 'up' : 'dn'}">(${h.chgPct >= 0 ? '+' : ''}${h.chgPct.toFixed(2)}%)</span>`;
+        const mDivH = h.yld ? h.value * h.yld / 100 / 12 : null;
+        return `<div class="h-card ${h.est ? 'stale' : ''}">
+          <div class="h-top"><span class="tk">${esc(h.key || h.name)}</span><span class="nm">${esc(h.name)}${h.est ? '<span class="badge-est">시세없음·평단기준</span>' : ''}</span>
+            <span class="qty">${h.qty.toLocaleString()}<small>주</small></span></div>
+          <div class="h-body">
+            <div class="kv"><span class="k">자산가치</span><span class="v">${fmtW(h.value)}</span></div>
+            <div class="kv"><span class="k">구매가</span><span class="v">${fmtW(h.avg)}</span></div>
+            <div class="kv"><span class="k">수익</span><span class="v ${cls}">${sign}${fmtW(pnlH)} (${sign}${pctH.toFixed(1)}%)</span></div>
+            <div class="kv"><span class="k">현재가</span><span class="v">${fmtW(h.price)}${chg}</span></div>
+            ${mDivH != null ? `<div class="kv"><span class="k">월 배당(추정)</span><span class="v" style="color:var(--gold)">${fmtW(mDivH)}</span></div>
+            <div class="kv"><span class="k">투자배당률</span><span class="v" style="color:var(--gold)">${h.yld}%</span></div>` : ''}
+          </div></div>`;
       }).join('')}</div>`;
   }).join('');
 
-  $('fx-note').textContent = `환율 $1 = ₩${fx.toFixed(1)} 적용 · 시세 확보 ${liveCount}/${M.holdings.length}종목 · 월 배당 추정은 시트에 배당수익률이 입력된 종목만 합산`;
+  $('fx-note').textContent = `환율 $1 = ₩${fx.toFixed(1)} 적용 · 시세 확보 ${liveCount}/${M.holdings.length}종목`;
 }
 
 /* ══════════ 메인 ══════════ */
@@ -510,6 +531,15 @@ async function loadAll(force) {
     console.error(err);
   }
 }
+function setHView(v) {
+  try { localStorage.setItem('hview', v); } catch(e){}
+  $('holdings-grid').style.display = v === 'grid' ? '' : 'none';
+  $('holdings').style.display = v === 'card' ? '' : 'none';
+  $('hv-grid').classList.toggle('on', v === 'grid');
+  $('hv-card').classList.toggle('on', v === 'card');
+}
+let _hv = 'grid'; try { _hv = localStorage.getItem('hview') || 'grid'; } catch(e){}
+setHView(_hv === 'card' ? 'card' : 'grid');
 renderDday();
 loadAll(false);
 setInterval(loadAll, 5 * 60 * 1000, false);
